@@ -23,4 +23,34 @@ ggplot(data = rdu_flight ,aes(x = dep_delay)) + geom_histogram(binwidth = 30)
 
 #Resumen estadistico, media,desviacion estandar y total de datos(n)
 rdu_flight %>% summarise(media = mean(dep_delay),ds = sd(dep_delay), n = n())
-                                        
+
+#Filtrar de acuerdo a multiples criterios, ejemplo: vuelos en a San Francisco en Febrero
+sfo_feb_flight <- nycflights %>% filter(dest == "SFO" , month == 2)
+#Nota tambien puede usarse | en lugar de coma 
+
+#Histograma retraso de arrivo(llegada) y resumen estadistico
+ggplot(data = sfo_feb_flight, aes(x = arr_delay)) + geom_histogram(binwidth = 15)
+sfo_feb_flight %>% summarise(media =mean(arr_delay), ds = sd(arr_delay), n = n())
+
+#Para calcular sumarios estadisticos para varios grupos de un marco de datos, de una categoria (variable), se toman los mismos elemnetos 
+#y se obtienen sus estadisticas para cada grupo
+sfo_feb_flight %>% group_by(origin) %>% summarise(media = mean(arr_delay), ds = sd(arr_delay), n = n())
+sfo_feb_flight %>% group_by(carrier) %>% summarise(media = mean(arr_delay), ds = sd(arr_delay), n = n(), IQR = IQR(arr_delay))
+
+#Se ordenan los datos por categorias (meses) y despues se obtienen el sumario estadistico (media), se ordena la media en orden desendente
+nycflights %>% group_by(month) %>% summarise(media = mean(dep_delay)) %>% arrange(desc(media))
+#Para ordenar los datos arrange(desc(media))
+nycflights %>% group_by(carrier) %>% summarise(media = mean(dep_delay)) %>% arrange(desc(media))
+
+feb_fligth <- nycflights %>% filter(month == 7)
+ggplot(data = feb_fligth, aes(x = dep_delay)) + geom_histogram()
+
+#Obtencion de graficos de caja y bigote para el retraso de salida por meses
+ggplot(nycflights, aes(x = factor(month), y = dep_delay)) + geom_boxplot()
+
+#porcentaje de vuelos por putualidad
+nycflights <- nycflights %>% mutate(dep_type = ifelse(dep_delay < 5, "on time", "delayed"))
+nycflights %>% group_by(origin) %>% summarise(a_tiempo = sum(dep_type == "on time") / n()) %>% arrange(desc(a_tiempo))
+
+#Grafico de barras segmentada 
+ggplot(data = nycflights, aes(x = origin, fill = dep_type)) + geom_bar()
