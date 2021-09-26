@@ -54,3 +54,19 @@ nycflights %>% group_by(origin) %>% summarise(a_tiempo = sum(dep_type == "on tim
 
 #Grafico de barras segmentada 
 ggplot(data = nycflights, aes(x = origin, fill = dep_type)) + geom_bar()
+
+#Velocidad promedio por cola de vuelo, marca de vuelo?
+#nycflights <- nycflights %>% mutate(avg_speed = distance / (air_time/60)) %>% select(avg_speed, tailnum)
+#Nota la funcion select() solo guardara los vectores de datos seleccionados en la tabla
+nycflights <- nycflights %>% mutate(avg_speed = distance / (air_time/60))
+speed <- nycflights %>% mutate(avg_speed = distance / (air_time/60)) %>% select(avg_speed, tailnum)
+
+#Este analisis va por cuenta propia, en promedio que cola de vuelo es el mas rapido?
+flight_speed <- nycflights %>% group_by(tailnum) %>% summarise(speed_mean = mean(avg_speed), n = n()) %>% arrange(desc(speed_mean))
+
+ggplot(data = nycflights, aes(x = avg_speed, y = distance)) + geom_point()
+
+nycflights <- nycflights %>% mutate(arr_type = ifelse(arr_delay <= 0, "on time", "delayed"))
+nycflights <- nycflights %>% mutate(dep_type = ifelse(dep_delay < 5, "on time", "delayed"))
+
+
