@@ -69,4 +69,6 @@ ggplot(data = nycflights, aes(x = avg_speed, y = distance)) + geom_point()
 nycflights <- nycflights %>% mutate(arr_type = ifelse(arr_delay <= 0, "on time", "delayed"))
 nycflights <- nycflights %>% mutate(dep_type = ifelse(dep_delay < 5, "on time", "delayed"))
 
-
+dep_delay_arr <- nycflights %>% filter(dep_type == "delayed", arr_type == "on time")
+dep_delay_arr %>% summarise(sum(dep_type == "delayed"))
+nycflights %>% summarise(n = n())
